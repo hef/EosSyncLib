@@ -19,16 +19,8 @@
 // THE SOFTWARE.
 
 #include "EosTimer.h"
-
-#ifdef WIN32
-	#include <Winsock2.h>
-	#include <Windows.h>
-#else
-	#include <mach/mach.h>
-	#include <mach/mach_time.h>
-	#include <unistd.h>
-	double EosTimer::sm_toMS = 0;
-#endif
+#include <chrono>
+#include <thread>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -71,37 +63,21 @@ bool EosTimer::GetExpired(unsigned int ms) const
 
 void EosTimer::Init()
 {
-#ifndef WIN32
-	if(sm_toMS == 0)
-	{
-		mach_timebase_info_data_t timeBase;
-		mach_timebase_info( &timeBase );
-		sm_toMS = timeBase.numer/static_cast<double>(timeBase.denom);
-		sm_toMS /= 1000000;
-	}
-#endif
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int EosTimer::GetTimestamp()
 {
-#ifdef WIN32
-	return timeGetTime();
-#else
-	return static_cast<unsigned int>(mach_absolute_time() * sm_toMS);
-#endif
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void EosTimer::SleepMS(unsigned int ms)
 {
-#ifdef WIN32
-	Sleep(ms);
-#else
-	usleep(ms*1000);
-#endif
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

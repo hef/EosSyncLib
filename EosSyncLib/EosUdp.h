@@ -25,6 +25,8 @@
 #define EOS_UDP_RECV_BUF_LEN 2048
 
 #include <string>
+#include <stdio.h>
+#include <string.h>
 
 class EosLog;
 

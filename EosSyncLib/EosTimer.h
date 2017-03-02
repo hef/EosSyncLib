@@ -41,10 +41,6 @@ public:
 
 private:
 	unsigned int	m_Timestamp;
-
-#ifndef WIN32
-	static double	sm_toMS;
-#endif
 };
 
 ////////////////////////////////////////////////////////////////////////////////

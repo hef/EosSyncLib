@@ -65,12 +65,14 @@ bool EosTcp_Mac::Initialize(EosLog &log, const char *ip, unsigned short port)
 				addr.sin_port = htons(port);
 
 				int optval = 1;
-				if(setsockopt(m_Socket,SOL_SOCKET,SO_NOSIGPIPE,(const char*)&optval,sizeof(optval)) == -1)
+#if __APPLE__
+                if(setsockopt(m_Socket,SOL_SOCKET,SO_NOSIGPIPE,(const char*)&optval,sizeof(optval)) == -1)
 				{
 					char text[256];
 					sprintf(text, "%s setsockopt(SO_NOSIGPIPE) failed with error %d", GetLogPrefix(m_LogPrefix), errno);
 					log.AddWarning(text);
-				}
+                }
+#endif
 				
 				// temporarily make socket non-blocking during connect					
 				SetSocketBlocking(log, m_LogPrefix, m_Socket, false);
@@ -422,13 +424,14 @@ bool EosTcpServer_Mac::Initialize(EosLog &log, const char *ip, unsigned short po
 			}
 
 			optval = 1;
-			if(setsockopt(m_Socket,SOL_SOCKET,SO_NOSIGPIPE,(const char*)&optval,sizeof(optval)) == -1)
+#if __APPLE__
+            if(setsockopt(m_Socket,SOL_SOCKET,SO_NOSIGPIPE,(const char*)&optval,sizeof(optval)) == -1)
 			{
 				char text[256];
 				sprintf(text, "%s setsockopt(SO_NOSIGPIPE) failed with error %d", EosTcp::GetLogPrefix(m_LogPrefix), errno);
 				log.AddWarning(text);
-			}
-			
+            }
+#endif
 			sockaddr_in addr;
 			memset(&addr, 0, sizeof(addr));
 			addr.sin_family = AF_INET;
